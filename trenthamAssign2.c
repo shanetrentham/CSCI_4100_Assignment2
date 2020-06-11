@@ -22,6 +22,29 @@ void read_line(char *line);
 
 int main()
 {
+  char* line [MAX_LINE];
+  char* args [MAX_ARGS];
+  read_line(line);
+
+  printf(&line);
+  /*while(line != "exit")
+  {
+    if(is_blank(*line) = 1)
+    {
+      read_line(*line);
+    }
+    else if(line == "exit")
+    {
+      exit(0);
+    }
+    else
+    {
+      parse_args(*line, *args);
+    }
+    
+  }*/
+
+
 }
 
 /* Checks if a string contains only whitespace
