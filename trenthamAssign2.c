@@ -1,4 +1,4 @@
-/* YOUR NAME HERE
+/* Shane Trentham
  * CSCI 4100
  * Programming Assignment 2
  * The Nut Shell - a simple shell that executes commands 
@@ -22,29 +22,51 @@ void read_line(char *line);
 
 int main()
 {
-  char* line [MAX_LINE];
-  char* args [MAX_ARGS];
-  read_line(line);
+  char *line[MAX_LINE];
+  char *args[MAX_ARGS];
 
-  printf(&line);
-  /*while(line != "exit")
+  while (strcmp(line, "exit") != 0)
   {
-    if(is_blank(*line) = 1)
+    read_line(&line);
+    int isBlank = is_blank(line);
+    if (isBlank == 1)
     {
-      read_line(*line);
+      puts("Command empty please reenter");
     }
-    else if(line == "exit")
+    else if (strcmp(line, "exit") == 0)
     {
+      puts("exiting...");
       exit(0);
     }
     else
     {
-      parse_args(*line, *args);
+      parse_args(&line, &args);
+
+      pid_t forkStatus;
+
+      forkStatus = fork();
+
+      /* Child... */
+      if (forkStatus == 0)
+      {
+        
+        if(execvp(args[0], args) == -1){
+          fputs(stderr, "Error not execvp not succesfull");
+          exit(1);
+        }
+      }
+      /* Parent... */
+      else if (forkStatus != -1)
+      {
+        wait(NULL);
+      }
+      else
+      {
+        fputs(stderr, "Error while calling the fork function");
+        exit(1);
+      }
     }
-    
-  }*/
-
-
+  }
 }
 
 /* Checks if a string contains only whitespace
@@ -54,8 +76,9 @@ int main()
 int is_blank(const char *str)
 {
   int i = 0;
-  while(str[i] != '\0') {
-    if(!isspace(str[i++]))
+  while (str[i] != '\0')
+  {
+    if (!isspace(str[i++]))
       return 0;
   }
   return 1;
@@ -69,7 +92,7 @@ void read_line(char *line)
 {
   char c;
   int chars_read = 0;
-  while((c = getchar()) != '\n' && chars_read < MAX_LINE)
+  while ((c = getchar()) != '\n' && chars_read < MAX_LINE)
     line[chars_read++] = c;
   line[chars_read] = '\0';
 }
@@ -81,18 +104,21 @@ void read_line(char *line)
  * command and its arguments will be stored.
  */
 void parse_args(const char *cmd, char *argv[])
-{ 
+{
   int argc = 0;
-  while(*cmd != '\0' && argc < MAX_ARGS) {
+  while (*cmd != '\0' && argc < MAX_ARGS)
+  {
     int i = 0;
-    while(!isspace(cmd[i]) && cmd[i] != '\0') i++;
-    argv[argc] = (char *) malloc(i + 1);
+    while (!isspace(cmd[i]) && cmd[i] != '\0')
+      i++;
+    argv[argc] = (char *)malloc(i + 1);
     strncpy(argv[argc], cmd, i);
-    while(isspace(cmd[i])) i++;
+    while (isspace(cmd[i]))
+      i++;
     cmd += i;
     argc++;
   }
-  if(argc < MAX_ARGS)
+  if (argc < MAX_ARGS)
     argv[argc] = NULL;
   else
     argv[MAX_ARGS - 1] = NULL;
